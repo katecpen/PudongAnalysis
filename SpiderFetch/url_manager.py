@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Mar 18 17:00:43 2018
 
-@author: zhangying
+@author: Kate Yang
 """
+
+""""""
+
+from collections import deque
+
 
 
 class UrlManager():
@@ -11,15 +15,15 @@ class UrlManager():
 
     def __init__(self):
         """构造函数，初始化属性"""
-        self.new_urls = set()  # 新url的集合
-        self.old_urls = set()  # 旧的URL集合
+        self.new_urls = deque()  # use FIFO to follow the original order of urls
+        self.old_urls = deque()
 
     def add_new_url(self, url):
         """向管理器中添加一个URL"""
         if url is None:
             return
         if url not in self.new_urls and url not in self.old_urls:
-            self.new_urls.add(url)
+            self.new_urls.append(url)
 
     def add_new_urls(self, urls):
         """向管理器中添加批量URL"""
@@ -30,18 +34,10 @@ class UrlManager():
 
     def get_new_url(self):
         """从url集合中弹出一个url"""
-        new_url = self.new_urls.pop()
-        self.old_urls.add(new_url)
+        new_url = self.new_urls.popleft()
+        self.old_urls.append(new_url)
         return new_url
 
     def has_new_url(self):
         """判断是否还有新的url"""
         return len(self.new_urls) != 0
-
-
-    def pop_urls(self, count):
-        for _ in range(count):
-            if self.new_urls:
-                self.old_urls.add(self.new_urls.pop())
-            else:
-                break
